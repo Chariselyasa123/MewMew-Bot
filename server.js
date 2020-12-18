@@ -5,6 +5,7 @@ require("dotenv").config();
 
 const PREFIX = '+';
 const ownerID = '258950399417909249';
+const active = new Map();
 
 client.on('message', msg => {
     // Ngatur perintah pesan yang masuk
@@ -20,7 +21,10 @@ client.on('message', msg => {
         delete require.cache[require.resolve(`./commands/${cmd}.js`)];
 
         // Oprtion
-        let ops = { ownerID: ownerID }
+        let ops = { 
+            ownerID: ownerID,
+            active: active
+        }
         let filePerintah = require(`./commands/${cmd}.js`);
         filePerintah.run(client, msg, args, ops);
         
