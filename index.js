@@ -14,7 +14,7 @@ client.on('ready', () => {
     console.log('MewMew Telah Online 👌')
 });
 
-client.on('message', async msg => {
+client.on('message', msg => {
 
     let argument = msg.content.substring(PREFIX.length).split(" ");
 
@@ -24,13 +24,17 @@ client.on('message', async msg => {
             function mulai(conn, msg) {
                 var msk = musik[msg.guild.id];
 
-                msk.dispatcher = conn.play(ytdl(msk.antrian[0], { filter: 'audioonly' }));
+                msk.dispatcher = conn.play(ytdl(msk.queue[0], { filter: 'audioonly' }));
+                
+                msk.queue.shift();
 
-                msk.antrian.shift();
-
-                msk.dispatcher.on("finish", () => {
-                    msk.antrian[0] ? mulai(conn, msg) : conn.disconnect()
-                })
+                msk.dispatcher.on("end", () => {
+                    if (msk.queue[0]) {
+                        play(conn, msg);
+                    } else {
+                        conn.disconnect();
+                    }
+                });
             }
 
             if (!argument[1]) {
@@ -42,22 +46,20 @@ client.on('message', async msg => {
             if (!msg.guild) return;
 
             // Cuman bakal masuk ke channel pengirim pesan sadja
-            if (msg.member.voice.channel) {
-                const connection = await msg.member.voice.channel.join();
+            if (!msg.member.voice.channel) {
+                msg.reply('Join ke voice 🎧 channel dulu dong Kakak! 🦍');
                 return;
-            } else {
-                msg.reply('Join ke voice channel dulu dong Kakak!');
             }
 
             if (!musik[msg.guild.id]) musik[msg.guild.id] = {
-                antrian: []
+                queue: []
             }
 
             var msk = musik[msg.guild.id];
 
-            msk.antrian.push(argument[1]);
+            msk.queue.push(argument[1]);
 
-            if(!msg.guild.voice.connection) msg.member.voice.channel.join().then(conn => {
+            if(!msg.guild.voiceConnection) msg.member.voice.channel.join().then(conn => {
                 mulai(conn, msg);
             })
 
