@@ -19,10 +19,10 @@ exports.run = async (client, msg, args, ops) => {
     ops.active.set(msg.guild.id, ambil);
 
     if (ambil.queue[0].voteSkips.length >= dibutuhkan) {
-        msg.channel.send('Berhasil mengganti lagu!');
+        msg.channel.send('✅ Berhasil mengganti lagu!');
         return ambil.dispatcher.emit('finish');
     }
 
-    msg.channel.send(`✅ Berhasil memilih lewati lagu, ${ambil.queue[0].voteSkips.length}/${dibutuhkan} dibutuhkan`);
+    msg.channel.send(`Berhasil memilih lewati lagu, ${ambil.queue[0].voteSkips.length}/${dibutuhkan} dibutuhkan ⛏`);
 
 }
