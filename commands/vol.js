@@ -1,4 +1,4 @@
-exports.run = async (client, msg, args, ops) => {
+exports.run = (client, msg, args, ops) => {
 
     function volume(args) {
         if (args <= 200 && args >= 100) {

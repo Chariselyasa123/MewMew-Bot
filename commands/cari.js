@@ -1,6 +1,6 @@
 const search = require('yt-search');
 
-exports.run = async (client, msg, args, ops) => {
+exports.run = (client, msg, args, ops) => {
 
     search(args.join(' '), (err, res) => {
         if (err) {

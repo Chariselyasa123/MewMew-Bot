@@ -1,4 +1,4 @@
-exports.run = async (client, msg, args, ops) => {
+exports.run = (client, msg, args, ops) => {
 
     let ambil = ops.active.get(msg.guild.id);
 
