@@ -11,7 +11,7 @@ exports.run = async (client, msg, args, ops) => {
 
     if (!validasi) {
         let commandFile = require('./cari');
-        commandFile.run(client, msg, args, ops);
+        return commandFile.run(client, msg, args, ops);
     }
 
     // if (!validasi) return msg.channel.send('❗ Kasih link yang bener Woi!! 😠');
