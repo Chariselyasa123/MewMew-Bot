@@ -9,7 +9,12 @@ exports.run = async (client, msg, args, ops) => {
 
     let validasi = await ytdl.validateURL(args[0]);
 
-    if (!validasi) return msg.channel.send('❗ Kasih link yang bener Woi!! 😠');
+    if (!validasi) {
+        let commandFile = require('./cari');
+        commandFile.run(client, msg, args, ops);
+    }
+
+    // if (!validasi) return msg.channel.send('❗ Kasih link yang bener Woi!! 😠');
 
     let info = await ytdl.getInfo(args[0]);
 
