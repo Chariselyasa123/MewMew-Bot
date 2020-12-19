@@ -10,7 +10,11 @@ exports.run = (client, msg, args, ops) => {
 
     if (msg.member.voice.channel !== msg.guild.me.voice.channel) return msg.channel.send('❗ Maaf kamu sekarang berada di channel yang berbeda dengan MewMew Bot 💩');
 
-    ambil.dispatcher.destroy();
+    if (!ambil.queue[0].crot) ambil.queue[0].crot = [];
+
+    ops.active.set(msg.guild.id, ambil);
+
+    ambil.dispatcher.emit('finish');
     msg.guild.me.voice.channel.leave();
 
     msg.channel.send('Keluar Channel....');
