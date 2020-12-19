@@ -15,19 +15,21 @@ client.on('message', msg => {
     if (msg.author.bot) return; // Hiraukan user bot
     if (!msg.content.startsWith(PREFIX)) return; // Kalo perintah ga diawali PREFIX '+' ga return apa-apa
 
+    const embed = new Discord.MessageEmbed(); // Buat pesan keren
+
     // Handel Perintah
     try {
         // Auto reload
         delete require.cache[require.resolve(`./commands/${cmd}.js`)];
 
         // Oprtion
-        let ops = { 
+        let ops = {
             ownerID: ownerID,
             active: active
         }
         let filePerintah = require(`./commands/${cmd}.js`);
-        filePerintah.run(client, msg, args, ops);
-        
+        filePerintah.run(client, msg, args, ops, embed);
+
     } catch (e) { // Nangkep error yang ada
         console.log(e);
     }
@@ -35,4 +37,4 @@ client.on('message', msg => {
 
 client.on('ready', () => console.log('MewMewbot Online! 🌟'));
 
-client.login(process.env.TOKEN); 
+client.login(process.env.TOKEN);
