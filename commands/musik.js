@@ -10,7 +10,7 @@ exports.run = async (client, msg, args, ops) => {
     let validasi = await ytdl.validateURL(args[0]);
 
     if (!validasi) {
-        let commandFile = require('./cari');
+        let commandFile = require('./jjasdwheu123hasduhwuhierhgbhisdbfksadfikegldsfeuyjhj');
         return commandFile.run(client, msg, args, ops);
     }
 
@@ -55,6 +55,7 @@ async function mainkan(client, ops, data) {
     data.dispatcher.on('finish', () => {
         selesai(client, ops, data.dispatcher);
     })
+
 }
 
 function selesai(client, ops, dispatcher) {

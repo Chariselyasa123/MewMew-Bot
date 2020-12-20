@@ -26,6 +26,10 @@ exports.run = (client, msg, args, ops) => {
         colektor.on('collect', m => {
             let commandFile = require(`./musik`);
             commandFile.run(client, msg, [videos[parseInt(m.content) - 1].url], ops);
+            if (m.hasOwnProperty('author')) colektor.stop()
         });
+        // console.log(client.MessageCollector)
+
+        // console.log(colektor.videos)
     });
 }
