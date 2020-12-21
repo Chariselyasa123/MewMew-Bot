@@ -27,10 +27,7 @@ exports.run = (client, msg, args, ops, embed) => {
 
     axios.get(`https://api.openweathermap.org/data/2.5/weather?q=${args[0]},id&appid=${process.env.CUACA}&units=metric&lang=id`)
         .then(res => {
-            console.log('Res:',
-                res.data)
             const sms = embed
-                .setTitle(`**Cuaca saat ini di ${res.data.name}**`)
                 .setTitle(`**Cuaca saat ini di ${res.data.name}**`)
                 .setColor('#e6e6e6')
                 .setFooter('Kalo bingung perintahnya, tinggal ketik *+perintah*')
