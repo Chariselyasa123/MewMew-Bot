@@ -1,7 +1,9 @@
 const ytdl = require('ytdl-core');
+const Discord = require('discord.js');
 
 exports.run = async (client, msg, args, ops) => {
 
+    const embed = new Discord.MessageEmbed();
     // Cek ada di voice chat atau engga
     if (!msg.member.voice.channel) return msg.channel.send('❗ Tolong masuk voice 🎧 channel dulu dong KK!');
 
@@ -15,6 +17,7 @@ exports.run = async (client, msg, args, ops) => {
     }
 
     // if (!validasi) return msg.channel.send('❗ Kasih link yang bener Woi!! 😠');
+    msg.channel.send(`Mencari musik 🔎`)
 
     let info = await ytdl.getInfo(args[0]);
 
@@ -27,24 +30,61 @@ exports.run = async (client, msg, args, ops) => {
     // Nambahin queue (Antrian lagu)
     data.queue.push({
         judulLagu: info.videoDetails.title,
+        lamaLagu: info.videoDetails.lengthSeconds,
         requester: msg.author.tag,
+        usernameRequester: msg.member.displayName,
+        fotoRequester: msg.author.displayAvatarURL(),
         url: args[0],
-        pemberitahuan: msg.channel.id
+        pemberitahuan: msg.channel.id,
+        thumbnails: info.videoDetails.thumbnails[2].url,
+        kategori: info.videoDetails.category
     })
 
-    if (!data.dispatcher) mainkan(client, ops, data);
+    if (!data.dispatcher) mainkan(client, ops, data, embed, info);
     else {
-        msg.channel.send(`Menambahkan Lagu Kedalam Antrian 🎶: ${info.videoDetails.title} 🌳 Diminta Oleh 👦: ${msg.author.username}`);
+        const menit = Math.floor(info.videoDetails.lengthSeconds / 60);
+        const detik = info.videoDetails.lengthSeconds - menit * 60;
+        let totalMenit = data.queue.reduce((a, b) => a + parseInt(b.lamaLagu), 0);
+        const total = totalMenit - parseInt(info.videoDetails.lengthSeconds);
+        const newMenit = Math.floor(total / 60);
+        const newDetik = total - newMenit * 60;
+        const sms = embed
+            .setAuthor('Ditambahkan kedalam antrian', `${msg.author.avatarURL()}`)
+            .setDescription(`[${info.videoDetails.title}](${args[0]})`)
+            .setThumbnail(`${info.videoDetails.thumbnails[3].url}`)
+            .addFields({
+                name: 'Channel',
+                value: `${info.videoDetails.ownerChannelName}`,
+                inline: true
+            }, {
+                name: 'Durasi Lagu',
+                value: `${menit}:${detik}`,
+                inline: true
+            }, {
+                name: 'Estimasi lagu dimulai',
+                value: `${newMenit}:${newDetik}`,
+                inline: true
+            }, {
+                name: 'Posisi dalam antrian',
+                value: `${data.queue.length-1}`
+            })
+        msg.channel.send(sms);
     }
 
     ops.active.set(msg.guild.id, data);
 }
 
 // Definisikan fungsi +musik
-async function mainkan(client, ops, data) {
+async function mainkan(client, ops, data, embed, info) {
 
+    const menit = Math.floor(data.queue[0].lamaLagu / 60);
+    const detik = data.queue[0].lamaLagu - menit * 60;
+    const sms = embed
+        .setTitle(`${data.queue[0].judulLagu}`)
+        .setThumbnail(`${data.queue[0].thumbnails}`)
+        .setDescription(`Panjang lagu ${menit}:${detik} \`${data.queue[0].kategori}\``)
     // Pesan sedang diputar
-    client.channels.cache.get(data.queue[0].pemberitahuan).send(`Yang Sedang Diputar ▶: ${data.queue[0].judulLagu} 🌳 Diminta Oleh 👦: ${data.queue[0].requester}`);
+    client.channels.cache.get(data.queue[0].pemberitahuan).send(sms);
 
     // Update data
     data.dispatcher = await data.connection.play(ytdl(data.queue[0].url, {
@@ -53,20 +93,21 @@ async function mainkan(client, ops, data) {
     data.dispatcher.guildID = data.guildID;
 
     data.dispatcher.on('finish', () => {
-        selesai(client, ops, data.dispatcher);
+        selesai(client, ops, data.dispatcher, embed, info);
     })
 
 }
 
-function selesai(client, ops, dispatcher) {
+function selesai(client, ops, dispatcher, embed, info) {
     let ambil = ops.active.get(dispatcher.guildID);
+    // let info = await ytdl.getInfo(args[0]);
 
     ambil.queue.shift();
 
     if (ambil.queue.length > 0) {
         ops.active.set(dispatcher.guildID, ambil);
 
-        mainkan(client, ops, ambil);
+        mainkan(client, ops, ambil, embed, info);
     } else {
         ops.active.delete(dispatcher.guildID);
 
